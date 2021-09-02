@@ -5,7 +5,7 @@
   "on_fail_path": "fail",
   "log_filepath": "log.txt",
   "log_level": "DEBUG",
-  "log_file_maxsize": 549755813888,
+  "log_file_maxsize": 10737418240,
   "log_file_max_count": 7,
   "loop_delay": 2
 }

@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 import os
 import logging
@@ -28,7 +28,7 @@ class Settings(BaseModel):
     on_fail_path: Path
     log_filepath: Path
     log_level: LogLevels = LogLevels.warning
-    log_file_maxsize: int = 549755813888  # 512MB
+    log_file_maxsize: int = 10737418240  # 10MB
     log_file_max_count: int = 5
     loop_delay: float = 2
 
