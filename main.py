@@ -50,7 +50,7 @@ def on_fail(src_path: Path):
         try:
             shutil.move(current_src_path, settings.on_fail_path / src_path.name)
         except Exception as e:
-            log.error(f"Cant move file. \n{e}")
+            log.error(f"Cant move file. {e}")
 
 
 if __name__ == '__main__':
@@ -62,6 +62,7 @@ if __name__ == '__main__':
     logging.basicConfig(level=settings.log_level)
     log = logging.getLogger()
     handler = RotatingFileHandler(settings.log_filepath, maxBytes=settings.log_file_maxsize, backupCount=settings.log_file_max_count - 1)
+    handler.setFormatter(logging.Formatter("[%(levelname)s]\t- %(asctime)s: %(message)s"))
     log.addHandler(handler)
     log.info(f"Setting: {settings}")
 
@@ -125,7 +126,7 @@ if __name__ == '__main__':
                     try:
                         shutil.move(current_src_path, current_dst_path)
                     except Exception as e:
-                        log.error(f"Cant move file. \n{e}")
+                        log.error(f"Cant move file. {e}")
                         on_fail(current_src_path)
                         continue
 
