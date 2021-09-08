@@ -5,51 +5,21 @@ import logging
 import shutil
 import sys
 import time
-from enum import Enum
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
 
 import pid
 from pid import PidFile
-from pydantic import BaseModel
 
-settings_filepath = Path("settings.json")
-
-
-class LogLevels(str, Enum):
-    debug = 'DEBUG'
-    info = 'INFO'
-    warning = 'WARNING'
-    error = 'ERROR'
-
-
-class Settings(BaseModel):
-    dry_run: bool = False
-    input_path: Path
-    output_path: Path
-    on_fail_path: Path
-    log_filepath: Path
-    log_level: LogLevels = LogLevels.warning
-    log_file_maxsize: int = 10737418240  # 10MB
-    log_file_max_count: int = 5
-    loop_delay: float = 2
-    pip_file: Path = Path("/tmp/ddg_micos_export.pip")
-
-    class Config:
-        use_enum_values = True
-
-
-class FileModel(BaseModel):
-    Listennummer: str
-    Abrechnungskreises: str
-    Personalnummer: str
-    Zahldatum: str
-    Abrechnungsdatum: str
+from FileNameModels import LN028File, DUA04File, LSTBFile
+from Settings import Settings
 
 
 def on_fail(src_path: Path):
-    log.info(f"Move '{src_path}' to '{settings.on_fail_path / src_path.name}'")
-    if not settings.dry_run:
+    if settings.dry_run:
+        log.warning(f"Move(--- DRY RUN ---) '{src_path}' to '{settings.on_fail_path / src_path.name}'")
+    else:
+        log.info(f"Move '{src_path}' to '{settings.on_fail_path / src_path.name}'")
         try:
             shutil.move(current_src_path, settings.on_fail_path / src_path.name)
         except Exception as e:
@@ -60,10 +30,9 @@ if __name__ == '__main__':
     cwd = Path(__file__).parent
     os.chdir(cwd)
     file = Path(__file__).name
-    if not settings_filepath.is_file():
-        print(f"Settings file '{settings_filepath}' not found.")
-        sys.exit(1)
-    settings = Settings.parse_file(settings_filepath)
+
+    settings = Settings()
+
     try:
         with PidFile(pidname=str(settings.pip_file)):
             logging.basicConfig(level=settings.log_level)
@@ -71,6 +40,8 @@ if __name__ == '__main__':
             handler = RotatingFileHandler(settings.log_filepath, maxBytes=settings.log_file_maxsize, backupCount=settings.log_file_max_count - 1)
             handler.setFormatter(logging.Formatter("[%(levelname)s]\t- %(asctime)s: %(message)s"))
             log.addHandler(handler)
+
+            log.info(f"--- STARTUP ---")
             log.info(f"Setting: {settings}")
 
             if settings.dry_run:
@@ -78,70 +49,70 @@ if __name__ == '__main__':
 
             last_run = 0
             while True:
-                if last_run + settings.loop_delay > time.time():
-                    time.sleep(0.001)
-                    continue
-                log.debug(f"--- Start loop ---")
-                last_run = time.time()
-                if not settings.input_path.is_dir():
-                    log.error(f"Input path '{settings.input_path}' not found.")
-                    continue
-
-                if not settings.output_path.is_dir():
-                    log.error(f"Output path '{settings.input_path}' not found.")
-                    continue
-
-                if not settings.on_fail_path.is_dir():
-                    log.error(f"On fail path '{settings.on_fail_path}' not found.")
-                    continue
-
-                field_names = list(FileModel.schema()["properties"].keys())
-
-                listdir = os.listdir(settings.input_path)
-                for file_path in listdir:
-                    file_path_full = settings.input_path / file_path
-                    if not file_path_full.is_file():
+                try:
+                    if last_run + settings.loop_delay > time.time():
+                        time.sleep(0.001)
                         continue
-                    field_next = 0
-                    work_file_path = file_path
+                    log.debug(f"--- Start loop ---")
+                    last_run = time.time()
+                    if not settings.input_path.is_dir():
+                        log.error(f"Input path '{settings.input_path}' not found.")
+                        sys.exit(1)
 
-                    log.info(f"Current file: {work_file_path}")
+                    if not settings.output_path.is_dir():
+                        log.error(f"Output path '{settings.input_path}' not found.")
+                        sys.exit(1)
 
-                    file_model_dict = {}
-                    while "_" in work_file_path and field_next < len(field_names):
-                        file_model_dict[field_names[field_next]] = work_file_path[:work_file_path.index("_")]
-                        work_file_path = work_file_path[work_file_path.index("_") + 1:]
-                        field_next += 1
+                    if not settings.on_fail_path.is_dir():
+                        log.error(f"On fail path '{settings.on_fail_path}' not found.")
+                        sys.exit(1)
 
-                    file_model = FileModel(**file_model_dict)
-                    log.info(f"Current file(parsed): {file_model}")
-
-                    current_src_path = settings.input_path / file_path
-                    current_dst_path = settings.output_path / f"{file_model.Abrechnungskreises}{file_model.Personalnummer}"
-
-                    if not current_dst_path.exists():
-                        log.error(f"Destination path '{current_dst_path}' not found.")
-                        on_fail(current_src_path)
-                        continue
-
-                    if not current_dst_path.is_dir():
-                        log.error(f"Destination path '{current_dst_path}' is not a directory.")
-                        on_fail(current_src_path)
-                        continue
-
-                    log.info(f"Current file(target_path): {current_dst_path}")
-                    log.info(f"Move '{current_src_path}' to '{current_dst_path}'")
-                    if not settings.dry_run:
-                        try:
-                            current_dst_path /= "files"
-                            if not current_dst_path.is_dir():
-                                log.info(f"MKDIR '{current_dst_path}'")
-                                os.mkdir(current_dst_path)
-                            shutil.move(current_src_path, current_dst_path)
-                        except Exception as e:
-                            log.error(f"Cant move file. {e}")
-                            on_fail(current_src_path)
+                    input_path_listdir = os.listdir(settings.input_path)
+                    for file_name in input_path_listdir:
+                        current_src_path = settings.input_path / file_name
+                        if not current_src_path.is_file():
                             continue
+
+                        try:
+                            if "LN028" in file_name:
+                                file_model = LN028File(file_name)
+                            elif "DUA04" in file_name:
+                                file_model = DUA04File(file_name)
+                            elif "LSTB" in file_name:
+                                file_model = LSTBFile(file_name)
+                            else:
+                                log.error(f"Unknown Filetype '{current_src_path}'.")
+                                continue
+                        except ValueError as e:
+                            log.error(e)
+                            continue
+
+                        log.info(f"Current file: {current_src_path}")
+                        log.info(f"Current file(parsed): {file_model}")
+
+                        current_dst_path = file_model.parse_dst_path()
+                        log.info(f"Current file(target_path): {current_dst_path}")
+
+                        if current_dst_path.exists():
+                            log.warning(f"Destination file already exist '{current_dst_path}' -> delete source.")
+                            os.remove(current_src_path)
+                            continue
+
+                        if not current_dst_path.parent.is_dir():
+                            raise RuntimeError(f"Destination path '{current_dst_path}' not found.")
+
+                        log.info(f"Move '{current_src_path}' to '{current_dst_path}'")
+                        if settings.dry_run:
+                            log.warning(f"Move(--- DRY RUN ---) '{current_src_path}' to '{current_dst_path}'")
+                            continue
+                        if not current_dst_path.parent.is_dir():
+                            log.info(f"MKDIR '{current_dst_path}'")
+                            os.mkdir(current_dst_path)
+                        shutil.move(current_src_path, current_dst_path)
+                except Exception as e:
+                    log.error(e)
+                    on_fail(current_src_path)
+                    continue
 
                 log.debug(f"--- End loop, sleep for {settings.loop_delay} seconds ---")
     except pid.base.PidFileAlreadyLockedError:
