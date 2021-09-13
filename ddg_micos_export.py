@@ -88,7 +88,7 @@ if __name__ == '__main__':
                                 continue
 
                             if not current_dst_path.parent.is_dir():
-                                raise RuntimeError(f"Destination path '{current_dst_path}' not found.")
+                                raise RuntimeError(f"Destination path '{current_dst_path.parent}' not found.")
 
                             log.info(f"Move '{current_src_path}' to '{current_dst_path}'")
                             if settings.dry_run:
