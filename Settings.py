@@ -16,6 +16,7 @@ class LogLevels(str, Enum):
 
 
 class Settings(BaseSettings):
+    version: str = "v0.2"
     dry_run: bool = False
     input_path: Path
     output_path: Path

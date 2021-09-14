@@ -87,16 +87,16 @@ if __name__ == '__main__':
                                 os.remove(current_src_path)
                                 continue
 
-                            if not current_dst_path.parent.is_dir():
-                                raise RuntimeError(f"Destination path '{current_dst_path.parent}' not found.")
+                            if not current_dst_path.parent.parent.is_dir():
+                                raise RuntimeError(f"Destination path '{current_dst_path.parent.parent}' not found.")
 
                             log.info(f"Move '{current_src_path}' to '{current_dst_path}'")
                             if settings.dry_run:
                                 log.warning(f"Move(--- DRY RUN ---) '{current_src_path}' to '{current_dst_path}'")
                                 continue
                             if not current_dst_path.parent.is_dir():
-                                log.info(f"MKDIR '{current_dst_path}'")
-                                os.mkdir(current_dst_path)
+                                log.info(f"MKDIR '{current_dst_path.parent}'")
+                                os.mkdir(current_dst_path.parent)
                             shutil.move(current_src_path, current_dst_path)
                     except Exception as e:
                         log.error(e)
