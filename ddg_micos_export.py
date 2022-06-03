@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-
+import datetime
 import os
 import logging
 import shutil
@@ -14,8 +14,9 @@ from pid import PidFile
 from FileNameModels import LN028File, DUA04File, LSTBFile
 from Settings import Settings
 
+
 def move():
-    log.debug(f"--- Start loop ---")
+    log.debug(f"--- move ---")
     while True:  # only runs ones, continue on dry run or exception
         try:
             if not settings.input_path.is_dir():
@@ -68,7 +69,8 @@ def move():
                     current_dst_path = try_path
 
                 if not current_dst_path.parent.parent.is_dir():
-                    raise RuntimeError(f"Destination path '{current_dst_path.parent.parent}' not found.")
+                    log.error(f"Destination path '{current_dst_path.parent.parent}' not found.")
+                    continue
 
                 log.info(f"Move '{current_src_path}' to '{current_dst_path}'")
                 if settings.dry_run:
@@ -78,6 +80,8 @@ def move():
                     log.info(f"MKDIR '{current_dst_path.parent}'")
                     os.mkdir(current_dst_path.parent)
                 shutil.move(current_src_path, current_dst_path)
+                ts = datetime.datetime.now().timestamp()
+                os.utime(current_dst_path, (ts, ts))
         except Exception as e:
             log.error(e)
             if settings.dry_run:
@@ -90,7 +94,39 @@ def move():
                     log.error(f"Cant move file. {e}")
             continue
         break
-    log.debug(f"--- End loop, sleep for {settings.loop_delay} seconds ---")
+    log.debug(f"--- End move ---")
+
+def delete():
+    log.debug(f"--- delete ---")
+    check_files = []
+    for c_dir in settings.output_path.iterdir():
+        if not c_dir.is_dir():
+            continue
+        # check if dir name has 10 chars
+        if len(c_dir.name) != 10:
+            continue
+        # check if dir name is digit
+        try:
+            int(c_dir.name)
+        except ValueError:
+            continue
+
+        if (c_dir / "files").is_dir():
+            for c_file in (c_dir / "files").iterdir():
+                if c_file.is_file():
+                    check_files.append(c_file)
+
+    #check if older than delete_max_age
+    for file in check_files:
+        if not os.path.isfile(file):
+            continue
+        if os.path.getmtime(file) < time.time() - settings.delete_max_age:
+            log.info(f"Delete '{file}'")
+            if settings.dry_run:
+                log.warning(f"Delete(--- DRY RUN ---) '{file}'")
+                continue
+            os.remove(file)
+    log.debug(f"--- End delete ---")
 
 if __name__ == '__main__':
     cwd = Path(__file__).parent
@@ -113,11 +149,15 @@ if __name__ == '__main__':
             if settings.dry_run:
                 log.warning(f"--- DRY RUN ---")
 
-            last_run = 0
+            last_move = 0
+            last_delete = 0
             while True:  # main loop
-                if last_run + settings.loop_delay <= time.time():
-                    last_run = time.time()
+                if last_move + settings.move_interval <= time.time():
+                    last_move = time.time()
                     move()
+                elif last_delete + settings.delete_interval <= time.time():
+                    last_delete = time.time()
+                    delete()
                 else:
                     time.sleep(0.001)
                     continue

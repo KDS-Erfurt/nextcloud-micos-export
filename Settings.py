@@ -17,15 +17,17 @@ class LogLevels(str, Enum):
 
 class Settings(BaseSettings):
     version: str = "v0.2"
-    dry_run: bool = False
+    dry_run: bool = True
     input_path: Path
     output_path: Path
     on_fail_path: Path
     log_filepath: Path
-    log_level: LogLevels = LogLevels.warning
+    log_level: LogLevels = LogLevels.debug
     log_file_maxsize: int = 10737418240  # 10MB
     log_file_max_count: int = 5
-    loop_delay: float = 2
+    move_interval: float = 2
+    delete_interval: float = 10
+    delete_max_age: int = 2 * 365 * 24 * 60 * 60  # 2 years
     pip_file: Path = Path("/tmp/ddg_micos_export.pip")
 
     def __init__(self):
