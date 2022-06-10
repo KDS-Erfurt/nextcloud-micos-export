@@ -17,11 +17,11 @@ class LogLevels(str, Enum):
 
 class Settings(BaseSettings):
     version: str = "v0.2"
-    dry_run: bool = True
+    dry_run: bool = False
     input_path: Path = "/mnt/Lohn/"
     output_path: Path = "/var/www/nextcloud/data"
     on_fail_path: Path = "/mnt/Lohn/fail"
-    log_filepath: Path = "/mnt/Lohn/log.txt"
+    log_filepath: Path = "/home/schliwaadm/log.txt"
     log_level: LogLevels = LogLevels.debug
     log_file_maxsize: int = 10737418240  # 10MB
     log_file_max_count: int = 5

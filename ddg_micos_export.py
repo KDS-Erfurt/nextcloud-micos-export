@@ -69,8 +69,7 @@ def move():
                     current_dst_path = try_path
 
                 if not current_dst_path.parent.parent.is_dir():
-                    log.error(f"Destination path '{current_dst_path.parent.parent}' not found.")
-                    continue
+                    raise RuntimeError(f"Destination path '{current_dst_path.parent.parent}' not found.")
 
                 log.info(f"Move '{current_src_path}' to '{current_dst_path}'")
                 if settings.dry_run:
@@ -86,6 +85,7 @@ def move():
             log.error(e)
             if settings.dry_run:
                 log.warning(f"Move(--- DRY RUN ---) '{current_src_path}' to '{settings.on_fail_path / current_src_path.name}'")
+                time.sleep(1)
             else:
                 log.info(f"Move '{current_src_path}' to '{settings.on_fail_path / current_src_path.name}'")
                 try:
@@ -157,7 +157,7 @@ if __name__ == '__main__':
                     move()
                 elif last_delete + settings.delete_interval <= time.time():
                     last_delete = time.time()
-                    delete()
+                    #delete()
                 else:
                     time.sleep(0.001)
                     continue
