@@ -1,32 +1,25 @@
 import json
-from enum import Enum
 from pathlib import Path
 from typing import Optional
 
+from controllogger.enums.log_levels import LogLevels
 from pydantic import BaseSettings
 
 settings_filepath = Path("settings.json")
 
 
-class LogLevels(str, Enum):
-    debug = 'DEBUG'
-    info = 'INFO'
-    warning = 'WARNING'
-    error = 'ERROR'
-
-
 class Settings(BaseSettings):
-    version: str = "v0.2"
-    dry_run: bool = False
-    input_path: Path = "/mnt/Lohn/"
-    output_path: Path = "/var/www/nextcloud/data"
-    on_fail_path: Path = "/mnt/Lohn/fail"
-    log_filepath: Path = "/home/schliwaadm/log.txt"
-    log_level: LogLevels = LogLevels.debug
+    dry_run: bool = True
+    input_path: Path
+    output_path: Path
+    on_fail_path: Path
+    on_delete_path: Path
+    log_filepath: Path
+    log_level: LogLevels = LogLevels.WARNING
     log_file_maxsize: int = 10737418240  # 10MB
     log_file_max_count: int = 5
     move_interval: float = 2
-    delete_interval: float = 10
+    delete_interval: float = 100
     delete_max_age: int = 2 * 365 * 24 * 60 * 60  # 2 years
     pip_file: Path = Path("/tmp/ddg_micos_export.pip")
 
@@ -48,3 +41,6 @@ class Settings(BaseSettings):
 
     class Config:
         use_enum_values = True
+
+
+settings = Settings()

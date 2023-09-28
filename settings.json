@@ -1,0 +1,9 @@
+{
+  "dry_run": true,
+  "input_path": "/mnt/Lohn/",
+  "output_path": "/var/www/nextcloud/data",
+  "on_fail_path": "/mnt/Lohn/fail",
+  "on_delete_path": "/mnt/Lohn/delete",
+  "log_filepath": "/var/www/nextcloud/data/DDG/files/logs/log.txt",
+  "log_level": 10
+}
