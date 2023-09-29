@@ -1,5 +1,5 @@
 {
-  "dry_run": true,
+  "dry_run": false,
   "input_path": "/mnt/Lohn/",
   "output_path": "/var/www/nextcloud/data",
   "on_fail_path": "/mnt/Lohn/fail",

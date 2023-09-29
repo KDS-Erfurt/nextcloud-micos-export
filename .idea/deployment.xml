@@ -6,7 +6,7 @@
       <paths name="root@192.168.6.26:22 agent">
         <serverdata>
           <mappings>
-            <mapping deploy="/tmp/pycharm_project_789" local="$PROJECT_DIR$" />
+            <mapping deploy="/opt/nextcloud_micos_export" local="$PROJECT_DIR$" />
           </mappings>
         </serverdata>
       </paths>
