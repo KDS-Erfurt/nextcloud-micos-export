@@ -19,7 +19,7 @@ from Settings import settings
 __projectname__ = "Nextcloud Micos Export"
 __description__ = "Move files from input to output folder and delete old files from output folder."
 __author__ = "Julius König"
-__version__ = "0.4.0"
+__version__ = "0.4.1"
 
 control_logger = ControlLogger(EasyLoggerConfig(name="nextcloud_micos_export",
                                                 level=settings.log_level,
@@ -163,37 +163,45 @@ if __name__ == '__main__':
 
     try:
         with PidFile(pidname=str(settings.pip_file)):
-            if settings.dry_run:
-                logger.warning(f"--- DRY RUN ---")
+            try:
+                if settings.dry_run:
+                    logger.warning(f"--- DRY RUN ---")
 
-            if not settings.log_filepath.parent.is_dir():
-                logger.error(f"Input path '{settings.log_filepath.parent}' not found.")
-                sys.exit(1)
-            if not settings.input_path.is_dir():
-                logger.error(f"Input path '{settings.input_path}' not found.")
-                sys.exit(1)
-            if not settings.output_path.is_dir():
-                logger.error(f"Output path '{settings.input_path}' not found.")
-                sys.exit(1)
-            if not settings.on_fail_path.is_dir():
-                logger.error(f"On fail path '{settings.on_fail_path}' not found.")
-                sys.exit(1)
-            if not settings.on_delete_path.is_dir():
-                logger.error(f"On delete path '{settings.on_delete_path}' not found.")
-                sys.exit(1)
+                if not settings.log_filepath.parent.is_dir():
+                    logger.error(f"Input path '{settings.log_filepath.parent}' not found.")
+                    sys.exit(1)
+                if not settings.input_path.is_dir():
+                    logger.error(f"Input path '{settings.input_path}' not found.")
+                    sys.exit(1)
+                if not settings.output_path.is_dir():
+                    logger.error(f"Output path '{settings.input_path}' not found.")
+                    sys.exit(1)
+                if not settings.on_fail_path.is_dir():
+                    logger.error(f"On fail path '{settings.on_fail_path}' not found.")
+                    sys.exit(1)
+                if not settings.on_delete_path.is_dir():
+                    logger.error(f"On delete path '{settings.on_delete_path}' not found.")
+                    sys.exit(1)
 
-            last_move = 0
-            last_delete = 0
-            while True:  # main loop
-                if last_move + settings.move_interval <= time.time():
-                    last_move = time.time()
-                    move()
-                elif last_delete + settings.delete_interval <= time.time():
-                    last_delete = time.time()
-                    delete()
-                else:
-                    time.sleep(0.001)
-                    continue
+                last_move = 0
+                last_delete = 0
+                while True:  # main loop
+                    try:
+                        if last_move + settings.move_interval <= time.time():
+                            last_move = time.time()
+                            move()
+                        elif last_delete + settings.delete_interval <= time.time():
+                            last_delete = time.time()
+                            delete()
+                        else:
+                            time.sleep(0.001)
+                            continue
+                    except Exception as e:
+                        logger.error(e)
+                        time.sleep(1)
+            except KeyboardInterrupt:
+                logger.info("Nextcloud Micos Export stopped by user.")
+                sys.exit(0)
     except pid.base.PidFileAlreadyLockedError:
         logger.error(f"Already running. Pid file '{settings.pip_file}' exists.")
         sys.exit(1)

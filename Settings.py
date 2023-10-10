@@ -16,7 +16,7 @@ class Settings(BaseSettings):
     on_delete_path: Path
     log_filepath: Path
     log_level: LogLevels = LogLevels.WARNING
-    log_file_maxsize: int = 10737418240  # 10MB
+    log_file_maxsize: int = 1024 * 1024 * 10  # 10MB
     log_file_max_count: int = 5
     move_interval: float = 2
     delete_interval: float = 100

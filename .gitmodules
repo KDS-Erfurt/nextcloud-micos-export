@@ -1,0 +1,3 @@
+[submodule "controllogger"]
+	path = controllogger
+	url = https://git.jetbrains.space/bastelquartier/fapi-el/controllogger.git
