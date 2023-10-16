@@ -1,6 +1,6 @@
 from pydantic import BaseModel, PrivateAttr
 
-from Settings import Settings
+from nextcloudmicosexport.Settings import settings
 
 
 class FileNameModel(BaseModel):
@@ -30,7 +30,10 @@ class FileNameModel(BaseModel):
         self._file_name = file_name
 
     def parse_dst_path(self):
-        current_dst_path = Settings().output_path / f"{self.Abrechnungskreis}{self.Personalnummer}"
+        current_dst_path = settings.output_path / f"{self.Abrechnungskreis}{self.Personalnummer}"
+        if settings.skip_zeros_on_username:
+            if not current_dst_path.is_dir():
+                current_dst_path = settings.output_path / f"{self.Abrechnungskreis.lstrip('0')}{self.Personalnummer}"
         current_dst_path /= "files"
         return current_dst_path
 

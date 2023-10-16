@@ -1,0 +1,12 @@
+[Unit]
+Description=Move files from input to output folder and delete old files from output folder.
+After=multi-user.target
+
+[Service]
+Type=simple
+Restart=always
+WorkingDirectory=/opt/nextcloudmicosexport
+ExecStart=/opt/nextcloudmicosexport/nextcloudmicosexport.sh
+
+[Install]
+WantedBy=multi-user.target
