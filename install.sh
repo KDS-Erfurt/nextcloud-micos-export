@@ -50,8 +50,31 @@ then
     apt install nano
 fi
 
-# install python package
+# install python3 if not installed
+echo "Checking if python3 is installed"
+if [ ! -x "$(command -v python3)" ]
+then
+    echo "Installing python3"
+    apt install python3
+fi
 
+# install python3-venv if not installed
+echo "Checking if python3-venv is installed"
+if [ ! -x "$(command -v python3-venv)" ]
+then
+    echo "Installing python3-venv"
+    apt install python3-venv
+fi
+
+# create virtual environment
+echo "Creating virtual environment in $INSTALLDIR/venv"
+python3 -m venv $INSTALLDIR/venv
+
+# activate virtual environment
+echo "Activating virtual environment"
+source $INSTALLDIR/venv/bin/activate
+
+# install python package
 pip3 install .
 
 # copy files to install directory

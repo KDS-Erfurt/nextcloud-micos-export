@@ -32,10 +32,6 @@ systemctl daemon-reload
 echo "Removing symlink..."
 rm /usr/bin/nextcloudmicosexport
 
-# uninstall python packages
-echo "Uninstalling python packages..."
-rm -rf /usr/local/lib/python3.9/dist-packages/nextcloudmicosexport*
-
 # ask if backup settings.json
 echo "Do you want to backup your settings.json? (y/n)"
 read answer
