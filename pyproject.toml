@@ -1,21 +1,26 @@
 [project]
-name = "nextcloudmicosexport"
-version = "0.4.2"
+name = "nextcloud_micos_export"
+dynamic = ["version"]
 description = "Move files from input to output folder and delete old files from output folder."
 authors = [
     {name = "Julius König", email = "julius.koenig@kds-kg.de"},
 ]
 dependencies = [
-    "pydantic",
-    "pid",
-    "controllogger",
-    "setuptools>=68.2.2",
+    "wiederverwendbar[rich]>=0.2.15",
+    "pid>=3.0.4",
+    "PyMySQL>=1.1.1",
 ]
-requires-python = ">=3.9.2"
+requires-python = ">=3.9"
 readme = "README.md"
-license = {text = "GPL-3"}
+license = {text = "GPL-3.0"}
 
 [build-system]
 requires = ["pdm-backend"]
 build-backend = "pdm.backend"
 
+[tool.pdm]
+distribution = true
+
+[tool.pdm.version]
+source = "file"
+path = "src/nextcloud_micos_export/__init__.py"

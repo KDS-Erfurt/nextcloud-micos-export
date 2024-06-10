@@ -1,6 +1,7 @@
+from nextcloud_micos_export.Settings import Settings
 from pydantic import BaseModel, PrivateAttr
 
-from nextcloudmicosexport.Settings import settings
+settings = Settings()
 
 
 class FileNameModel(BaseModel):
