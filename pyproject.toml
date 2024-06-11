@@ -9,6 +9,7 @@ dependencies = [
     "wiederverwendbar[rich]>=0.2.15",
     "pid>=3.0.4",
     "PyMySQL>=1.1.1",
+    "schedule>=1.2.2",
 ]
 requires-python = ">=3.9"
 readme = "README.md"

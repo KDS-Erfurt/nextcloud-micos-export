@@ -5,7 +5,7 @@
 groups = ["default"]
 strategy = ["cross_platform"]
 lock_version = "4.4.1"
-content_hash = "sha256:ed40882ea2638bde3a44514acd9b3c15fc159f1b3b139a721ffd98955b55ad61"
+content_hash = "sha256:bb0896e9316408d8286e2641d29e777f0dfebd7c9e159625f7e1b105de863d1a"
 
 [[package]]
 name = "annotated-types"
@@ -216,6 +216,15 @@ dependencies = [
 files = [
     {file = "rich-13.7.1-py3-none-any.whl", hash = "sha256:4edbae314f59eb482f54e9e30bf00d33350aaa94f4bfcd4e9e3110e64d0d7222"},
     {file = "rich-13.7.1.tar.gz", hash = "sha256:9be308cb1fe2f1f57d67ce99e95af38a1e2bc71ad9813b0e247cf7ffbcc3a432"},
+]
+
+[[package]]
+name = "schedule"
+version = "1.2.2"
+requires_python = ">=3.7"
+summary = "Job scheduling for humans."
+files = [
+    {file = "schedule-1.2.2-py3-none-any.whl", hash = "sha256:5bef4a2a0183abf44046ae0d164cadcac21b1db011bdd8102e4a0c1e91e06a7d"},
 ]
 
 [[package]]
