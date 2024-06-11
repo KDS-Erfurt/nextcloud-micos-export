@@ -4,7 +4,7 @@ __description__ = "Move files from input to output folder and delete old files f
 __license__ = "GPL-3.0"
 __author__ = "Julius Koenig"
 __author_email__ = "info@bastelquartier.de"
-__version__ = "0.5.0"
+__version__ = "0.5.1"
 
 from nextcloud_micos_export.Settings import Settings
 from wiederverwendbar.logger import LoggerSingleton
