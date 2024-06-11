@@ -21,7 +21,7 @@ class Settings(FileConfig, LoggerSettings, metaclass=Singleton):
     pid_file_name: str = Field("nextcloud_micos_export", description="Name of the pid file.")
     pid_file_path: Path = DirectoryPath("/tmp", description="Path to pid file.", exists=True)
     skip_zeros_on_username: bool = Field(False, description="Skip zeros on username.")
-    nextcloud_db_host: str = Field("192.168.6.26", description="Host of the nextcloud database.")
+    nextcloud_db_host: str = Field("localhost", description="Host of the nextcloud database.")
     nextcloud_db_port: int = Field(3306, description="Port of the nextcloud database.")
     nextcloud_db_name: str = Field("nextcloud", description="Name of the nextcloud database.")
     nextcloud_db_user: str = Field("lohnexport", description="User of the nextcloud database.")
