@@ -5,8 +5,8 @@ After=multi-user.target
 [Service]
 Type=simple
 Restart=always
-WorkingDirectory=/
-ExecStart=python3 -m nextcloudmicosexport
+WorkingDirectory=/opt/nextcloud_micos_export
+ExecStart=python3 -m nextcloud_micos_export
 
 [Install]
 WantedBy=multi-user.target
