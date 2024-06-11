@@ -16,6 +16,16 @@ logger = LoggerSingleton()
 settings = Settings()
 
 
+def connection() -> pymysql.Connection:
+    # Connect to the database
+    return pymysql.connect(host=settings.nextcloud_db_host,
+                           port=settings.nextcloud_db_port,
+                           user=settings.nextcloud_db_user,
+                           password=settings.nextcloud_db_password,
+                           database=settings.nextcloud_db_name,
+                           cursorclass=pymysql.cursors.DictCursor)
+
+
 def move_but_rename_exist(src_path: Path, dst_path: Path):
     count = None
     while True:
@@ -77,20 +87,38 @@ def move():
                     current_dst_path = try_path
 
                 if not current_dst_path.parent.parent.is_dir():
-                    raise RuntimeError(f"Destination path '{current_dst_path.parent.parent}' not found.")
+                    logger.warning(f"Destination path '{current_dst_path.parent.parent}' not found.")
+                    # # Connect to the database
+                    conn = connection()
+                    with conn:
+                        with conn.cursor() as cursor:
+                            query = f"SELECT * FROM `oc_users` WHERE `uid` = {file_model.uid()}"
+                            cursor.execute(query)
+                            user = cursor.fetchone()
+                    if user is None:
+                        raise RuntimeError(f"User '{file_model.uid()}' not found.")
+                    else:
+                        if settings.dry_run:
+                            logger.warning(f"MKDIR(--- DRY RUN ---) '{current_dst_path.parent.parent}'")
+                        else:
+                            logger.info(f"MKDIR '{current_dst_path.parent.parent}'")
+                            os.mkdir(current_dst_path.parent.parent)
 
-                logger.info(f"Move '{current_src_path}' to '{current_dst_path}'")
+                if not current_dst_path.parent.is_dir():
+                    if settings.dry_run:
+                        logger.warning(f"MKDIR(--- DRY RUN ---) '{current_dst_path.parent}'")
+                    else:
+                        logger.info(f"MKDIR '{current_dst_path.parent}'")
+                        os.mkdir(current_dst_path.parent)
                 if settings.dry_run:
                     logger.warning(f"Move(--- DRY RUN ---) '{current_src_path}' to '{current_dst_path}'")
-                    continue
-                if not current_dst_path.parent.is_dir():
-                    logger.info(f"MKDIR '{current_dst_path.parent}'")
-                    os.mkdir(current_dst_path.parent)
-                shutil.move(current_src_path, current_dst_path)
-                ts = datetime.datetime.now().timestamp()
-                os.utime(current_dst_path, (ts, ts))
-            except Exception as e:
-                logger.error(e)
+                else:
+                    logger.info(f"Move '{current_src_path}' to '{current_dst_path}'")
+                    shutil.move(current_src_path, current_dst_path)
+                    ts = datetime.datetime.now().timestamp()
+                    os.utime(current_dst_path, (ts, ts))
+            except Exception as _e:
+                logger.error(_e)
                 move_but_rename_exist(current_src_path, settings.on_fail_path / current_src_path.name)
         logger.debug(f"--- End move ---")
     except Exception as e:
@@ -146,16 +174,11 @@ def cleanup():
     try:
         logger.debug(f"--- cleanup ---")
 
-        # Connect to the database
-        connection = pymysql.connect(host=settings.nextcloud_db_host,
-                                     port=settings.nextcloud_db_port,
-                                     user=settings.nextcloud_db_user,
-                                     password=settings.nextcloud_db_password,
-                                     database=settings.nextcloud_db_name,
-                                     cursorclass=pymysql.cursors.DictCursor)
+        # # Connect to the database
+        conn = connection()
 
-        with connection:
-            with connection.cursor() as cursor:
+        with conn:
+            with conn.cursor() as cursor:
                 query = "SELECT * FROM `oc_users`"
                 cursor.execute(query)
                 existing_users = cursor.fetchall()
@@ -208,6 +231,15 @@ if __name__ == '__main__':
             if not settings.on_delete_path.is_dir():
                 logger.error(f"On delete path '{settings.on_delete_path}' not found.")
                 sys.exit(1)
+
+            # Test connection
+            try:
+                connection()
+            except pymysql.err.OperationalError as e:
+                logger.error(f"Can't connect to database. {e}")
+                sys.exit(1)
+
+            print()
 
             while True:
                 schedule.run_pending()
