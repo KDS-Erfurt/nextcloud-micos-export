@@ -4,4 +4,4 @@ __description__ = "Move files from input to output folder and delete old files f
 __license__ = "GPL-3.0"
 __author__ = "Kirchhoff Datensysteme Services GmbH & Co. KG"
 __author_email__ = "service@kds-kg.de"
-__version__ = "0.5.4"
+__version__ = "0.5.5"
