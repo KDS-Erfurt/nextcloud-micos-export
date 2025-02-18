@@ -14,7 +14,7 @@ class Settings(FileConfig, LoggerSettings, metaclass=ModelSingleton):
     on_fail_path: DirectoryPath = Field(default=..., description="Path to on_fail directory.", exists=True)
     on_delete_path: DirectoryPath = Field(default=..., description="Path to on_delete directory.", exists=True)
     move_interval: int = Field(default=2, description="Interval in seconds between move operations. Default: 2 seconds")
-    delete_interval: float = Field(default=100, description="Interval in seconds between delete operations. Default: 100 seconds")
+    delete_interval: int = Field(default=100, description="Interval in seconds between delete operations. Default: 100 seconds")
     delete_max_age: int = Field(default=2 * 365 * 24 * 60 * 60, description="Max age in seconds for delete operations. Default: 2 years")
     timezone: str = Field(default="Europe/Berlin", description="Timezone for cron jobs. Default: Europe/Berlin")
     cleanup_hour: int = Field(default=..., description="Hour of the day to cleanup. Default: 22")
