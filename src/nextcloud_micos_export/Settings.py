@@ -2,11 +2,10 @@ from pathlib import Path
 
 from pydantic import Field, DirectoryPath
 from wiederverwendbar.logger import LoggerSettings
-from wiederverwendbar.pydantic.file_config import FileConfig
-from wiederverwendbar.singleton import Singleton
+from wiederverwendbar.pydantic import FileConfig, ModelSingleton
 
 
-class Settings(FileConfig, LoggerSettings, metaclass=Singleton):
+class Settings(FileConfig, LoggerSettings, metaclass=ModelSingleton):
     dry_run: bool = True
     input_path: DirectoryPath = Field(default=..., description="Path to input directory.", exists=True)
     output_path: DirectoryPath = Field(default=..., description="Path to output directory.", exists=True)
