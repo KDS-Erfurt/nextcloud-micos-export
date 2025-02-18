@@ -6,7 +6,7 @@ authors = [
     {name = "Kirchhoff Datensysteme Services GmbH & Co. KG", email = "service@kds-kg.de"},
 ]
 dependencies = [
-    "wiederverwendbar[rich]>=0.2.15",
+    "wiederverwendbar[rich]>=0.7.2",
     "pid>=3.0.4",
     "PyMySQL>=1.1.1",
     "schedule>=1.2.2",
