@@ -25,3 +25,6 @@ distribution = true
 [tool.pdm.version]
 source = "file"
 path = "src/nextcloud_micos_export/__init__.py"
+
+[tool.pdm.scripts]
+push-tags = { shell = "git push origin --tags" }
