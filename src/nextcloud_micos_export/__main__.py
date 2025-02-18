@@ -231,7 +231,7 @@ def main():
                 time.sleep(1)
 
     except pid.base.PidFileAlreadyLockedError:
-        logger.error(f"Already running. Pid file '{settings().pip_file}' exists.")
+        logger.error(f"Already running. Pid file '{settings().pid_file_path / settings().pid_file_name}' exists.")
         sys.exit(1)
     except KeyboardInterrupt:
         logger.info("Nextcloud Micos Export stopped by user.")
