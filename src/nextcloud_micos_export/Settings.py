@@ -8,10 +8,10 @@ from wiederverwendbar.singleton import Singleton
 
 class Settings(FileConfig, LoggerSettings, metaclass=Singleton):
     dry_run: bool = True
-    input_path: DirectoryPath = Field(..., description="Path to input directory.", exists=True)
-    output_path: DirectoryPath = Field(..., description="Path to output directory.", exists=True)
-    on_fail_path: DirectoryPath = Field(..., description="Path to on_fail directory.", exists=True)
-    on_delete_path: DirectoryPath = Field(..., description="Path to on_delete directory.", exists=True)
+    input_path: DirectoryPath = Field(default=..., description="Path to input directory.", exists=True)
+    output_path: DirectoryPath = Field(default=..., description="Path to output directory.", exists=True)
+    on_fail_path: DirectoryPath = Field(default=..., description="Path to on_fail directory.", exists=True)
+    on_delete_path: DirectoryPath = Field(default=..., description="Path to on_delete directory.", exists=True)
     move_interval: float = Field(2, description="Interval in seconds between move operations. Default: 2 seconds")
     delete_interval: float = Field(100, description="Interval in seconds between delete operations. Default: 100 seconds")
     delete_max_age: int = Field(2 * 365 * 24 * 60 * 60, description="Max age in seconds for delete operations. Default: 2 years")
