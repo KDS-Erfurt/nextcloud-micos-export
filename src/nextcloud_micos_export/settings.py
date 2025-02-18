@@ -52,7 +52,7 @@ def settings() -> Settings:
                 break
             if s is None:
                 raise FileNotFoundError(f"No '{SETTINGS_FILE_NAME}' file found. Possible paths:\n"
-                                        f"{'\n'.join([str(path.absolute() / SETTINGS_FILE_NAME) for path in SETTINGS_LOOKUP_PATHS])}")
+                                        f"{f'{chr(10)}'.join([str(path.absolute() / SETTINGS_FILE_NAME) for path in SETTINGS_LOOKUP_PATHS])}")
             return s
         except FileNotFoundError as e:
             print(e)
