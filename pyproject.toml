@@ -3,7 +3,7 @@ name = "nextcloud-micos-export"
 dynamic = ["version"]
 description = "Move files from input to output folder and delete old files from output folder."
 authors = [
-    {name = "Julius König", email = "julius.koenig@kds-kg.de"},
+    {name = "Kirchhoff Datensysteme Services GmbH & Co. KG", email = "service@kds-kg.de"},
 ]
 dependencies = [
     "wiederverwendbar[rich]>=0.2.15",
