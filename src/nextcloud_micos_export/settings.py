@@ -29,7 +29,7 @@ class Settings(FileConfig, LoggerSettings, metaclass=ModelSingleton):
     cleanup_hour: int = Field(default=..., description="Hour of the day to cleanup. Default: 22")
     cleanup_minute: int = Field(default=..., description="Minute of the hour to cleanup. Default: 0")
     pid_file_name: str = Field(default="nextcloud_micos_export", description="Name of the pid file.")
-    pid_file_path: Path = DirectoryPath(default=Path("/tmp"), description="Path to pid file.", exists=True)
+    pid_file_path: Path = Field(default=Path("/tmp"), description="Path to pid file.", exists=True)
     skip_zeros_on_username: bool = Field(default=False, description="Skip zeros on username.")
     nextcloud_db_host: str = Field(default="localhost", description="Host of the nextcloud database.")
     nextcloud_db_port: int = Field(default=3306, description="Port of the nextcloud database.")
