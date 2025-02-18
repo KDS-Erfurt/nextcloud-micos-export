@@ -31,6 +31,7 @@ def move_but_rename_exist(src_path: Path, dst_path: Path):
     while True:
         out_path = dst_path if count is None else dst_path.parent / dst_path.name / f".{count}"
         if out_path.exists():
+            count = count + 1 if count is not None else 1
             continue
         if settings.dry_run:
             logger.warning(f"Move(--- DRY RUN ---) '{src_path}' to '{out_path}'")
