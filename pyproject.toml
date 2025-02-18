@@ -15,6 +15,9 @@ requires-python = ">=3.9"
 readme = "README.md"
 license = {text = "GPL-3.0"}
 
+[project.scripts]
+nextcloud-micos-export = "nextcloud_micos_export.__main__:main"
+
 [build-system]
 requires = ["pdm-backend"]
 build-backend = "pdm.backend"
