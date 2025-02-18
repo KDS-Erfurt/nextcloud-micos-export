@@ -1,5 +1,5 @@
 [project]
-name = "nextcloud_micos_export"
+name = "nextcloud-micos-export"
 dynamic = ["version"]
 description = "Move files from input to output folder and delete old files from output folder."
 authors = [
