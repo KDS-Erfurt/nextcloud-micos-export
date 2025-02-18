@@ -10,7 +10,7 @@ class FileNameModel(BaseModel):
     Personalnummer: str
 
     def __init__(self, file_name: str):
-        field_names = list(self.schema()["properties"].keys())
+        field_names = list(self.model_json_schema()["properties"].keys())
 
         file_name_backup = file_name
         data = {}
