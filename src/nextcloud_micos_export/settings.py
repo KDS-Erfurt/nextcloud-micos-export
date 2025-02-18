@@ -6,6 +6,15 @@ from wiederverwendbar.logger import LoggerSettings
 from wiederverwendbar.pydantic import FileConfig, ModelSingleton
 from wiederverwendbar.singleton import Singleton
 
+SETTINGS_FILE_NAME: str = "settings.json"
+SETTINGS_LOOKUP_PATHS: list[Path] = [
+    Path("."),
+    Path("/usr/local/etc/nextcloud-micos-export"),
+    Path("/usr/local/opt/nextcloud-micos-export"),
+    Path("/etc/nextcloud-micos-export"),
+    Path("/opt/nextcloud-micos-export")
+]
+
 
 class Settings(FileConfig, LoggerSettings, metaclass=ModelSingleton):
     dry_run: bool = Field(default=False, description="Dry run.")
@@ -34,7 +43,20 @@ def settings() -> Settings:
         return Singleton.get_by_type(Settings)
     except RuntimeError:
         try:
-            return Settings(file_path="settings", init=True)
+            s = None
+            for path in SETTINGS_LOOKUP_PATHS:
+                file_path = path / SETTINGS_FILE_NAME
+                if not file_path.is_file():
+                    continue
+                s = Settings(file_path=file_path, file_must_exist=True, init=True)
+                break
+            if s is None:
+                raise FileNotFoundError(f"No '{SETTINGS_FILE_NAME}' file found. Possible paths:\n"
+                                        f"{'\n'.join([str(path.absolute() / SETTINGS_FILE_NAME) for path in SETTINGS_LOOKUP_PATHS])}")
+            return s
+        except FileNotFoundError as e:
+            print(e)
+            sys.exit(1)
         except ValidationError as e:
             print(e)
             sys.exit(1)
